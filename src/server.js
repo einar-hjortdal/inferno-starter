@@ -13,8 +13,15 @@ app.get('/auth', (req, res) => {
 })
 
 // Serve static files
+// Note: in production, configure lighttpd to serve static files instead for better security and performance.
 app.get('/static/*', (req, res) => {
-  res.sendFile(resolve(`dist/${req.path}`))
+  return fileResponse(req.path, res)
+})
+
+// Adjust request path, all static files should be in dist/static/
+app.get('/favicon.ico', (req, res) => {
+  const adjustedPath = `static${req.path}`
+  return fileResponse(adjustedPath, res)
 })
 
 // Every other route can be handled by the inferno router
@@ -23,6 +30,19 @@ app.get('/*', (req, res) => {
 })
 
 app.listen(29200)
+
+function fileResponse (path, res) {
+  const filePath = resolve(`dist${path}`)
+
+  stat(filePath, (err, stats) => {
+    if (err || !stats.isFile()) {
+      // If the file doesn't exist, respond with a 404 status
+      res.sendStatus(404)
+    } else {
+      res.sendFile(filePath)
+    }
+  })
+}
 
 function infernoServerResponse (req, res) {
   const context = {}
