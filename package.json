@@ -1,0 +1,44 @@
+{
+  "name": "inferno-starter",
+  "version": "3.0.0",
+  "description": "Starter project for Inferno applications",
+  "type": "module",
+  "main": "dist/server.js",
+  "scripts": {
+    "cleanup": "rm -rf dist",
+    "dev:client": "INFERNO_ENV=development WEBPACK_ENV=client webpack --mode=development --config=webpack.config.js",
+    "dev:server": "INFERNO_ENV=development WEBPACK_ENV=server webpack --mode=development --config=webpack.config.js",
+    "dev:serve": "while [ ! -f dist/server.js ]; do sleep 1; done && node --watch --watch-preserve-output dist/server.js",
+    "dev": "npm run cleanup && npm run dev:client & npm run dev:server & npm run dev:serve",
+    "build:client": "INFERNO_ENV=production WEBPACK_ENV=client webpack --mode=production --config=webpack.config.js",
+    "build:server": "INFERNO_ENV=production WEBPACK_ENV=server webpack --mode=production --config=webpack.config.js",
+    "build": "npm run cleanup && npm run build:client && npm run build:server",
+    "serve": "node dist/server.js"
+  },
+  "author": "Coachonko",
+  "repository": "https://github.com/Coachonko/inferno-starter",
+  "license": "NCSA",
+  "dependencies": {
+    "@tinyhttp/app": "^2.2.1",
+    "inferno": "^8.2.2",
+    "inferno-hydrate": "^8.2.2",
+    "inferno-router": "^8.2.2",
+    "inferno-server": "^8.2.2"
+  },
+  "devDependencies": {
+    "@babel/preset-env": "^7.22.10",
+    "babel-loader": "^9.1.3",
+    "babel-plugin-inferno": "^6.6.1",
+    "copy-webpack-plugin": "^11.0.0",
+    "css-loader": "^6.8.1",
+    "css-minimizer-webpack-plugin": "^5.0.1",
+    "html-minimizer-webpack-plugin": "^4.4.0",
+    "less": "^4.2.0",
+    "less-loader": "^11.1.3",
+    "mini-css-extract-plugin": "^2.7.6",
+    "standard": "^17.1.0",
+    "terser-webpack-plugin": "^5.3.9",
+    "webpack": "^5.88.2",
+    "webpack-cli": "^5.1.4"
+  }
+}
