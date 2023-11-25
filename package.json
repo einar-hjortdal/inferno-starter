@@ -9,7 +9,7 @@
     "dev:client": "INFERNO_ENV=development WEBPACK_ENV=client webpack --mode=development --config=webpack.config.js",
     "dev:server": "INFERNO_ENV=development WEBPACK_ENV=server webpack --mode=development --config=webpack.config.js",
     "dev:serve": "while [ ! -f dist/server.js ]; do sleep 1; done && node --watch --watch-preserve-output dist/server.js",
-    "dev": "npm run cleanup && npm run dev:client & npm run dev:server & npm run dev:serve",
+    "dev": "npm run cleanup && (npm run dev:client & npm run dev:server & npm run dev:serve)",
     "build:client": "INFERNO_ENV=production WEBPACK_ENV=client webpack --mode=production --config=webpack.config.js",
     "build:server": "INFERNO_ENV=production WEBPACK_ENV=server webpack --mode=production --config=webpack.config.js",
     "build": "npm run cleanup && npm run build:client && npm run build:server",
