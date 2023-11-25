@@ -19,19 +19,24 @@ app.get('/static/*', (req, res) => {
 
 // Every other route can be handled by the inferno router
 app.get('/*', (req, res) => {
-  res.send(infernoServerResponse(req.url))
+  return infernoServerResponse(req, res)
 })
 
 app.listen(29200)
 
-function infernoServerResponse ({ url }) {
+function infernoServerResponse (req, res) {
+  const context = {}
   const renderedApp = renderToString(
-    <StaticRouter location={url}>
+    <StaticRouter location={req.url} context={context}>
       <InfernoApp />
     </StaticRouter>
   )
 
-  return `
+  if (context.url) {
+    return res.redirect(context.url)
+  }
+
+  return res.send(`
 <!DOCTYPE html>
 <html lang="en">
 
@@ -50,5 +55,5 @@ function infernoServerResponse ({ url }) {
   <script src="static/client.js"></script>
 </body>
 
-</html>`
+</html>`)
 }
