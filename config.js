@@ -1,4 +1,5 @@
 export const config = {
   // global configurations/constants
-  BASE_URL: 'http://localhost:29200'
+  PORT: '8000',
+  BASE_URL: 'http://localhost:8000'
 }
