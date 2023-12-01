@@ -1,0 +1,1 @@
+- Fetch data on the server, use it to generate tags in `<head>`, then pass it to the BrowserRouter.

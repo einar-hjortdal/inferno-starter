@@ -93,13 +93,18 @@ function getAliases () {
   if (mode === 'production') {
     return {
       inferno: 'inferno/dist/index.esm.js',
-      "inferno-server": 'inferno-server/dist/index.esm.js'
+      "inferno-server": 'inferno-server/dist/index.esm.js',
+      "inferno-hydrate": 'inferno-hydrate/dist/index.esm.js',
+      "inferno-router": 'inferno-router/dist/index.esm.js'
+
     }
   }
   if (mode === 'development') {
     return {
       inferno: 'inferno/dist/index.dev.esm.js',
-      "inferno-server": 'inferno-server/dist/index.dev.esm.js'
+      "inferno-server": 'inferno-server/dist/index.dev.esm.js',
+      "inferno-hydrate": 'inferno-hydrate/dist/index.dev.esm.js',
+      "inferno-router": 'inferno-router/dist/index.dev.esm.js'
     }
   }
 

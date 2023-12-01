@@ -5,7 +5,7 @@ import { App } from './components'
 import './styles/index.less'
 
 hydrate(
-  <BrowserRouter>
+  <BrowserRouter initialData={window.__initialData__}>
     <App />
   </BrowserRouter>
   , document.getElementById('root')

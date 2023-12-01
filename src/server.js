@@ -1,53 +1,70 @@
 import { resolve } from 'node:path'
+import { stat } from 'node:fs/promises'
 import { App as TinyhttpApp } from '@tinyhttp/app'
 import { renderToString } from 'inferno-server'
-import { StaticRouter } from 'inferno-router'
-import { App as InfernoApp } from './components'
+import { StaticRouter, traverseLoaders, resolveLoaders } from 'inferno-router'
+import { config } from '../config'
+
+import { Routes, App as InfernoApp } from './components'
 
 const app = new TinyhttpApp()
 
 // peony sends the client a JWT, but a JWT cannot be provided by the browser on its first request.
 // The solution is to let the frontend server put the JWT in a cookie and give the cookie to the browser.
-app.get('/auth', (req, res) => {
+app.get('/auth', async (req, res) => {
   res.send('use this route for setting cookies')
 })
 
 // Serve static files
 // Note: in production, configure lighttpd to serve static files instead for better security and performance.
-app.get('/static/*', (req, res) => {
-  return fileResponse(req.path, res)
+app.get('/static/*', async (req, res) => {
+  return await fileResponse(req.path, res)
 })
 
-// Adjust request path, all static files should be in dist/static/
-app.get('/favicon.ico', (req, res) => {
+// Serve static files during development.
+// Note: in production, configure lighttpd to serve static files instead.
+app.get('/favicon.ico', async (req, res) => {
   const adjustedPath = `static${req.path}`
-  return fileResponse(adjustedPath, res)
+  return await fileResponse(adjustedPath, res)
 })
 
-// Every other route can be handled by the inferno router
-app.get('/*', (req, res) => {
-  return infernoServerResponse(req, res)
+// Every other route can be handled by inferno-router
+app.get('/*', async (req, res) => {
+  return await infernoServerResponse(req, res)
 })
 
-app.listen(29200)
+app.listen(config.PORT)
 
-function fileResponse (path, res) {
+async function fileResponse (path, res) {
   const filePath = resolve(`dist${path}`)
 
-  stat(filePath, (err, stats) => {
-    if (err || !stats.isFile()) {
-      // If the file doesn't exist, respond with a 404 status
+  try {
+    const stats = await stat(filePath)
+
+    if (!stats.isFile()) {
       res.sendStatus(404)
     } else {
       res.sendFile(filePath)
     }
-  })
+  } catch (err) {
+    // TODO handle errors correctly
+    res.sendStatus(404)
+  }
 }
 
-function infernoServerResponse (req, res) {
+async function infernoServerResponse (req, res) {
+  // traverseLoaders requires an instance of the component that contains the top-level routes.
+  const routesInstance = Routes()
+  const loaderEntries = traverseLoaders(req.url, routesInstance, config.BASE_URL)
+  const initialData = await resolveLoaders(loaderEntries)
+
   const context = {}
   const renderedApp = renderToString(
-    <StaticRouter location={req.url} context={context}>
+    <StaticRouter
+      context={context}
+      location={req.url}
+      initialData={initialData}
+    >
       <InfernoApp />
     </StaticRouter>
   )
@@ -56,23 +73,31 @@ function infernoServerResponse (req, res) {
     return res.redirect(context.url)
   }
 
+  // TODO use __initialData__ to manage head elements, or send defaults
+  const language = 'en'
+  const title = 'Coachonko\'s Inferno Starter'
+  const description = 'Starter for Inferno applications'
+
   return res.send(`
 <!DOCTYPE html>
-<html lang="en">
+<html lang="${language}">
 
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
-  <title>Coachonko's blog</title>
-  <meta name="description" content="Starter for Inferno applications">
+
+  <title>${title}</title>
+  <meta name="description" content="${description}">
   <link rel="stylesheet" type="text/css" href="static/bundle.css">
+
+  <script>window.__initialData__ = ${JSON.stringify(initialData)};</script>
+  <script src="static/client.js" defer></script>
 </head>
 
 <body>
   <noscript>You need to enable JavaScript to run this app.</noscript>
   <div id="root">${renderedApp}</div>
-  <script src="static/client.js"></script>
 </body>
 
 </html>`)
