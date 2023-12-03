@@ -1,11 +1,9 @@
 import { Component } from 'inferno'
-import { useLoaderData, useLoaderError } from 'inferno-router'
 
 export default class Home extends Component {
-  static async getInitialData ({ request }) {
+  static async getInitialData () {
     return fetch('https://jsonplaceholder.typicode.com/posts/1', {
-      method: 'GET',
-      signal: request?.signal
+      method: 'GET'
     })
   }
 
@@ -13,38 +11,12 @@ export default class Home extends Component {
     super(props)
 
     this.state = {
-      lastError: null,
-      fetchedData: null
-    }
-  }
-
-  async componentDidMount () {
-    const data = useLoaderData(this.props)
-    const err = useLoaderError(this.props)
-    if (data || err) {
-      await this.handleLoaderResult(data, err)
-    } else {
-      // handle situation
-    }
-  }
-
-  async handleLoaderResult (data, err) {
-    if (err) {
-      this.setState({ lastError: err })
-    }
-    if (data) {
-      this.setState({ fetchedData: data })
+      isFetching: true
     }
   }
 
   render () {
-    let data = this.state.fetchedData
-    // this.state.fetchedData is null on the server because lifecycle methods do not work.
-    if (!this.state.fetchedData) {
-      data = useLoaderData(this.props)
-    }
-    data = JSON.stringify(data)
-
+    const data = JSON.stringify(this.props.initialData)
     return (
       <>
         <div>

@@ -1,10 +1,12 @@
-import Routes from './Routes'
+import { Component } from 'inferno'
+import { Routes } from './Routes'
 
-export default function App () {
-  // The app component could be a more complex component with state and lifecycles.
-  return (
-    <div>
-      <Routes />
-    </div>
-  )
+export default class App extends Component {
+  render () {
+    return (
+      <div>
+        <Routes initialData={this.props.initialData} />
+      </div>
+    )
+  }
 }

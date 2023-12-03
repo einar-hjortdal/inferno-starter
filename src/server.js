@@ -2,10 +2,12 @@ import { resolve } from 'node:path'
 import { stat } from 'node:fs/promises'
 import { App as TinyhttpApp } from '@tinyhttp/app'
 import { renderToString } from 'inferno-server'
-import { StaticRouter, traverseLoaders, resolveLoaders } from 'inferno-router'
-import { config } from '../config'
+import { StaticRouter, matchPath } from 'inferno-router'
 
-import { Routes, App as InfernoApp } from './components'
+import { config } from '../config'
+import { routes } from './routes'
+
+import { App as InfernoApp } from './components'
 
 const app = new TinyhttpApp()
 
@@ -53,64 +55,69 @@ async function fileResponse (path, res) {
 }
 
 async function infernoServerResponse (req, res) {
-  // Problem #1: can't pass App component, must pass Route component.
-  // No errors are thrown when App component is passed. Components are not rendered.
-  const appInstance = InfernoApp()
-  const loaderEntries = traverseLoaders(req.url, appInstance, config.BASE_URL)
+  try {
+    let currentRoute = routes.find((route) => matchPath(req.url, route))
+    if (!currentRoute) {
+      currentRoute = {}
+    }
 
-  // This works fine.
-  // const routesInstance = Routes()
-  // const loaderEntries = traverseLoaders(req.url, routesInstance, config.BASE_URL)
+    let initialData = {}
+    if (currentRoute.getInitialData) {
+      initialData = await (await currentRoute.getInitialData()).json()
+    }
 
-  const initialData = await resolveLoaders(loaderEntries)
+    const context = {}
+    const renderedApp = renderToString(
+      <StaticRouter
+        context={context}
+        location={req.url}
+      >
+        <InfernoApp initialData={initialData} />
+      </StaticRouter>
+    )
 
-  const context = {}
-  const renderedApp = renderToString(
-    <StaticRouter
-      context={context}
-      location={req.url}
-      initialData={initialData}
-    >
-      <InfernoApp />
-    </StaticRouter>
-  )
+    if (context.url) {
+      return res.redirect(context.url)
+    }
 
-  if (context.url) {
-    return res.redirect(context.url)
+    const language = 'en'
+
+    // Use initialData to manage head elements
+    let title = 'Coachonko\'s Inferno Starter'
+    if (initialData) {
+      if (initialData.title) {
+        title = initialData.title
+      }
+    }
+
+    const description = 'Starter for Inferno applications'
+
+    return res.send(`
+      <!DOCTYPE html>
+      <html lang="${language}">
+
+      <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="robots" content="noindex, nofollow">
+
+        <title>${title}</title>
+        <meta name="description" content="${description}">
+        <link rel="stylesheet" type="text/css" href="static/bundle.css">
+
+        <script>window.__initialData__ = ${JSON.stringify(initialData)};</script>
+        <script src="static/client.js" defer></script>
+      </head>
+
+      <body>
+        <noscript>You need to enable JavaScript to run this app.</noscript>
+        <div id="root">${renderedApp}</div>
+      </body>
+
+      </html>
+    `)
+  } catch (err) {
+    console.log(err)
+  // TODO handle err
   }
-
-  const language = 'en'
-
-  // Using initialData to manage head elements works fine
-  // The shape of the initialData object seems a bit unpredictable
-  let title = 'Coachonko\'s Inferno Starter'
-  if (initialData[req.url] && initialData[req.url].res && initialData[req.url].res.title) {
-    title = initialData[req.url].res.title
-  }
-
-  const description = 'Starter for Inferno applications'
-
-  return res.send(`
-<!DOCTYPE html>
-<html lang="${language}">
-
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="robots" content="noindex, nofollow">
-
-  <title>${title}</title>
-  <meta name="description" content="${description}">
-  <link rel="stylesheet" type="text/css" href="static/bundle.css">
-
-  <script>window.__initialData__ = ${JSON.stringify(initialData)};</script>
-  <script src="static/client.js" defer></script>
-</head>
-
-<body>
-  <noscript>You need to enable JavaScript to run this app.</noscript>
-  <div id="root">${renderedApp}</div>
-</body>
-
-</html>`)
 }
