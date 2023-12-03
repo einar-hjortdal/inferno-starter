@@ -38,17 +38,18 @@ export default class Home extends Component {
   }
 
   render () {
+    let data = this.state.fetchedData
+    // this.state.fetchedData is null on the server because lifecycle methods do not work.
     if (!this.state.fetchedData) {
-      return null
+      data = useLoaderData(this.props)
     }
+    data = JSON.stringify(data)
 
-    // Problem #2: server does not actually render this. Why?
-    const displayData = JSON.stringify(this.state.fetchedData)
     return (
       <>
         <div>
           <h1>Coachonko's Inferno starter</h1>
-          {displayData}
+          {data}
         </div>
       </>
     )
