@@ -55,7 +55,7 @@ async function fileResponse (path, res) {
 async function infernoServerResponse (req, res) {
   // Problem #1: can't pass App component, must pass Route component.
   // No errors are thrown when App component is passed. Components are not rendered.
-  const appInstance = new InfernoApp()
+  const appInstance = InfernoApp()
   const loaderEntries = traverseLoaders(req.url, appInstance, config.BASE_URL)
 
   // This works fine.
