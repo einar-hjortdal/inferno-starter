@@ -84,7 +84,7 @@ async function infernoServerResponse (req, res) {
   // Using initialData to manage head elements works fine
   // The shape of the initialData object seems a bit unpredictable
   let title = 'Coachonko\'s Inferno Starter'
-  if (initialData[req.url].res.title) {
+  if (initialData[req.url] && initialData[req.url].res && initialData[req.url].res.title) {
     title = initialData[req.url].res.title
   }
 
