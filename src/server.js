@@ -53,9 +53,15 @@ async function fileResponse (path, res) {
 }
 
 async function infernoServerResponse (req, res) {
-  // traverseLoaders requires an instance of the component that contains the top-level routes.
-  const routesInstance = Routes()
-  const loaderEntries = traverseLoaders(req.url, routesInstance, config.BASE_URL)
+  // Problem #1: can't pass App component, must pass Route component.
+  // No errors are thrown when App component is passed. Components are not rendered.
+  const appInstance = new InfernoApp()
+  const loaderEntries = traverseLoaders(req.url, appInstance, config.BASE_URL)
+
+  // This works fine.
+  // const routesInstance = Routes()
+  // const loaderEntries = traverseLoaders(req.url, routesInstance, config.BASE_URL)
+
   const initialData = await resolveLoaders(loaderEntries)
 
   const context = {}
@@ -73,9 +79,15 @@ async function infernoServerResponse (req, res) {
     return res.redirect(context.url)
   }
 
-  // TODO use __initialData__ to manage head elements, or send defaults
   const language = 'en'
-  const title = 'Coachonko\'s Inferno Starter'
+
+  // Using initialData to manage head elements works fine
+  // The shape of the initialData object seems a bit unpredictable
+  let title = 'Coachonko\'s Inferno Starter'
+  if (initialData[req.url].res.title) {
+    title = initialData[req.url].res.title
+  }
+
   const description = 'Starter for Inferno applications'
 
   return res.send(`

@@ -1,11 +1,9 @@
 import { Component } from 'inferno'
 import { useLoaderData, useLoaderError } from 'inferno-router'
 
-import { config } from '../../../config'
-
 export default class Home extends Component {
   static async getInitialData ({ request }) {
-    return fetch(`${config.DATA_SOURCE}`, {
+    return fetch('https://jsonplaceholder.typicode.com/posts/1', {
       method: 'GET',
       signal: request?.signal
     })
@@ -15,7 +13,8 @@ export default class Home extends Component {
     super(props)
 
     this.state = {
-      temp: null
+      lastError: null,
+      fetchedData: null
     }
   }
 
@@ -30,14 +29,26 @@ export default class Home extends Component {
   }
 
   async handleLoaderResult (data, err) {
-    // do what you want with loader data or error
+    if (err) {
+      this.setState({ lastError: err })
+    }
+    if (data) {
+      this.setState({ fetchedData: data })
+    }
   }
 
   render () {
+    if (!this.state.fetchedData) {
+      return null
+    }
+
+    // Problem #2: server does not actually render this. Why?
+    const displayData = JSON.stringify(this.state.fetchedData)
     return (
       <>
         <div>
           <h1>Coachonko's Inferno starter</h1>
+          {displayData}
         </div>
       </>
     )
