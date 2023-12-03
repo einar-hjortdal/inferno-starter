@@ -73,7 +73,8 @@ async function infernoServerResponse (req, res) {
     return res.redirect(context.url)
   }
 
-  // TODO use __initialData__ to manage head elements, or send defaults
+  // TODO use initialData to manage head elements, or send defaults
+  // initialData[req.url].res.title
   const language = 'en'
   const title = 'Coachonko\'s Inferno Starter'
   const description = 'Starter for Inferno applications'
