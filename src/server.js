@@ -17,6 +17,8 @@ app.get('/auth', async (req, res) => {
   res.send('use this route for setting cookies')
 })
 
+// TODO endpoint to create sitemap
+
 // Serve static files
 // Note: in production, configure lighttpd to serve static files instead for better security and performance.
 app.get('/static/*', async (req, res) => {
@@ -66,13 +68,13 @@ async function infernoServerResponse (req, res) {
       initialData = await (await currentRoute.getInitialData()).json()
     }
 
-    const context = {}
+    const context = { initialData }
     const renderedApp = renderToString(
       <StaticRouter
         context={context}
         location={req.url}
       >
-        <InfernoApp initialData={initialData} />
+        <InfernoApp />
       </StaticRouter>
     )
 

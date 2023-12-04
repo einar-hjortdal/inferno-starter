@@ -16,7 +16,7 @@ export default class Home extends Component {
   }
 
   render () {
-    const data = JSON.stringify(this.props.initialData)
+    const data = JSON.stringify(this.props.staticContext.initialData)
     return (
       <>
         <div>
