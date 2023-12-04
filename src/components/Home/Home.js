@@ -10,18 +10,26 @@ export default class Home extends Component {
   constructor (props) {
     super(props)
 
+    let initialData
+    if (typeof window === 'undefined') {
+      initialData = props.staticContext.initialData
+    } else {
+      initialData = window.___initialData
+      delete window.___initialData
+    }
+
     this.state = {
-      isFetching: true
+      isFetching: true,
+      homeData: initialData
     }
   }
 
   render () {
-    const data = JSON.stringify(this.props.staticContext.initialData)
     return (
       <>
         <div>
           <h1>Coachonko's Inferno starter</h1>
-          {data}
+          {JSON.stringify(this.state.homeData)}
         </div>
       </>
     )

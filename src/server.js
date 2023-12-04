@@ -107,7 +107,7 @@ async function infernoServerResponse (req, res) {
         <meta name="description" content="${description}">
         <link rel="stylesheet" type="text/css" href="static/bundle.css">
 
-        <script>window.__initialData__ = ${JSON.stringify(initialData)};</script>
+        <script>window.___initialData = ${JSON.stringify(initialData)};</script>
         <script src="static/client.js" defer></script>
       </head>
 

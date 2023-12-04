@@ -6,7 +6,7 @@ import './styles/index.less'
 
 hydrate(
   <BrowserRouter>
-    <App initialData={window.__initialData__} />
+    <App />
   </BrowserRouter>
   , document.getElementById('root')
 )
