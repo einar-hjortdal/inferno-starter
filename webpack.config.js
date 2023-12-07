@@ -26,6 +26,7 @@ const baseConfig = {
       }
     ]
   },
+  devtool: getSourceMaps(),
   watch: getWatch()
 }
 
@@ -119,6 +120,17 @@ function getWatch () {
   }
   if (mode === 'development') {
     return true
+  }
+}
+
+function getSourceMaps () {
+  const mode = process.env.INFERNO_ENV
+
+  if (mode === 'production') {
+    return false
+  }
+  if (mode === 'development') {
+    return 'eval-source-map'
   }
 }
 
