@@ -6,11 +6,15 @@ import CssMinimizerPlugin from 'css-minimizer-webpack-plugin'
 
 const baseConfig = {
   resolve: {
-    extensions: ['.js', '.jsx'],
+    extensions: ['.js', '.jsx', '.json'],
     alias: getAliases()
   },
   module: {
     rules: [
+      {
+        test: /\.json$/,
+        type: 'json'
+      },
       {
         test: /\.(js|jsx)$/,
         resolve: {
@@ -94,9 +98,9 @@ function getAliases () {
   if (mode === 'production') {
     return {
       inferno: 'inferno/dist/index.esm.js',
-      "inferno-server": 'inferno-server/dist/index.esm.js',
-      "inferno-hydrate": 'inferno-hydrate/dist/index.esm.js',
-      "inferno-router": 'inferno-router/dist/index.esm.js'
+      'inferno-server': 'inferno-server/dist/index.esm.js',
+      'inferno-hydrate': 'inferno-hydrate/dist/index.esm.js',
+      'inferno-router': 'inferno-router/dist/index.esm.js'
 
     }
   }
