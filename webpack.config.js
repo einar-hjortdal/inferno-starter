@@ -40,7 +40,7 @@ const serverConfig = {
   entry: resolve('src/server.js'),
   output: {
     path: resolve('./dist'),
-    publicPath: '/',
+    publicPath: '/static/',
     filename: 'server.js',
     chunkFormat: 'module'
   },
@@ -54,7 +54,7 @@ const clientConfig = {
   entry: resolve('src/client.js'),
   output: {
     path: resolve('./dist/static'),
-    publicPath: '/',
+    publicPath: '/static/',
     filename: 'client.js'
   },
   module: {
@@ -86,7 +86,7 @@ const clientConfig = {
     }),
     new CopyPlugin({
       patterns: [
-        { from: 'src/static' }
+        { from: 'src/static/public' }
       ]
     })
   ]
@@ -107,9 +107,9 @@ function getAliases () {
   if (mode === 'development') {
     return {
       inferno: 'inferno/dist/index.dev.esm.js',
-      "inferno-server": 'inferno-server/dist/index.dev.esm.js',
-      "inferno-hydrate": 'inferno-hydrate/dist/index.dev.esm.js',
-      "inferno-router": 'inferno-router/dist/index.dev.esm.js'
+      'inferno-server': 'inferno-server/dist/index.dev.esm.js',
+      'inferno-hydrate': 'inferno-hydrate/dist/index.dev.esm.js',
+      'inferno-router': 'inferno-router/dist/index.dev.esm.js'
     }
   }
 

@@ -1,2 +1,4 @@
 dist
 node_modules
+src/static/private/*
+!src/static/private/README.md

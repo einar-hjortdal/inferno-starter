@@ -1,3 +1,5 @@
+// TODO create server, browser and shared directories.
+// TODO move routes.js to shared directory
 import AppRoute from './components/Routes/AppRoute'
 
 import { Home } from './components/Home'
